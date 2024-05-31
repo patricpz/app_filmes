@@ -7,12 +7,13 @@ interface Movie {
 }
 
 const MyList: React.FC = ({ route }) => {
-  const { myList } = route.params;
+  const myList = route.params === undefined ? [] : route.params.myList;
+  console.log(route.params.myList)
 
   const renderMovies = () => {
-    return myList.map((movie, index) => (
-      <View key={index} style={{ marginBottom: 10 }}>
-        <Text style={{ color: 'white' }}>{movie.title}</Text>
+    return myList.map((movie) => (
+      <View key={movie.id} style={{ marginBottom: 10 }}>
+        <Text style={{ color: '#000' }}>{movie.title}</Text>
       </View>
     ));
   };
@@ -20,7 +21,7 @@ const MyList: React.FC = ({ route }) => {
   return (
     <View>
       <Text>Minha Lista de Filmes</Text>
-      {renderMovies()}
+      {myList.length <= 0 ? <Text>Não tem nada na lista</Text> : renderMovies()}
     </View>
   );
 };
