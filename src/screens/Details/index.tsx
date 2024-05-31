@@ -16,7 +16,7 @@ type MovieDetail = {
     vote_average: number;
 };
 
-export function Details() {
+export function Details(props) {
     const route = useRoute();
     const { movieId } = route.params as { movieId: number };
 
@@ -60,7 +60,7 @@ export function Details() {
             }
         }
         // Navega para a tela de MyList passando os filmes selecionados
-        navigation.navigate('MyList', { myList });
+        props.navigation.navigate('MyList', { myList });
     };
 
     const isMovieInList = (movieId: number): boolean => {
