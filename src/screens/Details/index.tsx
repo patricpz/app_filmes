@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Text, View, Image, ScrollView, ActivityIndicator, TouchableOpacity } from "react-native";
+import { Text, View, Image, ActivityIndicator, TouchableOpacity } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { api } from '../../../services/api';
 import { styles } from './styles';
@@ -16,13 +16,13 @@ type MovieDetail = {
     vote_average: number;
 };
 
-export function Details(props) {
+export function Details() {
     const route = useRoute();
-    const { movieId } = route.params as { movieId: number };
+    const { movieId, myList: initialMyList = [] } = route.params as { movieId: number, myList?: MovieDetail[] };
 
     const [movieDetail, setMovieDetail] = useState<MovieDetail | null>(null);
     const [loading, setLoading] = useState(true);
-    const [myList, setMyList] = useState<MovieDetail[]>([]);
+    const [myList, setMyList] = useState<MovieDetail[]>(initialMyList);
     const navigation = useNavigation();
 
     useEffect(() => {
@@ -49,18 +49,16 @@ export function Details(props) {
     const addToMyList = () => {
         if (movieDetail) {
             const movieIndex = myList.findIndex(movie => movie.id === movieDetail.id);
+            let updatedList = [...myList];
             if (movieIndex !== -1) {
-                // Se o filme já estiver na lista, remova-o
-                const updatedList = [...myList];
                 updatedList.splice(movieIndex, 1);
-                setMyList(updatedList);
             } else {
-                // Se o filme não estiver na lista, adicione-o
-                setMyList([...myList, movieDetail]);
+                updatedList = [...myList, movieDetail];
             }
+            setMyList(updatedList);
+            // @ts-ignore
+            navigation.navigate('MyList', { myList: updatedList });
         }
-        // Navega para a tela de MyList passando os filmes selecionados
-        props.navigation.navigate('MyList', { myList });
     };
 
     const isMovieInList = (movieId: number): boolean => {
@@ -75,7 +73,7 @@ export function Details(props) {
                 </TouchableOpacity>
                 <Text style={styles.headerText}>Detalhes</Text>
                 <TouchableOpacity onPress={addToMyList}>
-                    <BookmarkSimple color={isMovieInList(movieId) ? "#8A2BE2" : "#FFF"} size={32} weight="thin" />
+                    <BookmarkSimple color={isMovieInList(movieId) ? "#FCAF17" : "#FFF"} size={32} weight="thin" />
                 </TouchableOpacity>
             </View>
 
