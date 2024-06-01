@@ -1,15 +1,15 @@
 {
   "expo": {
     "name": "my-application",
-    "slug": "my-application",
-    "version": "1.0.0",
+    "slug": "app-filmes",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#222E3C"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -18,13 +18,21 @@
       "supportsTablet": true
     },
     "android": {
+      "versionCode": 2,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.patric085.appfilmes"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "fdd9a2fb-79a9-4532-ac30-3f9d3dce0250"
+      }
+    },
+    "owner": "patric085"
   }
 }
