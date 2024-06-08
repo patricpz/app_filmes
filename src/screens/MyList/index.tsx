@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { View, Text, FlatList, Image, TouchableOpacity } from 'react-native';
-import { useRoute } from '@react-navigation/native';
 import { styles } from './style';
 import { BookmarkSimple } from 'phosphor-react-native';
+import { MovieContext } from '../../contexts/MOviesContext';
 
 interface Movie {
   id: number;
@@ -11,23 +11,10 @@ interface Movie {
 }
 
 const MyList: React.FC = () => {
-  const [myList, setMyList] = useState<Movie[]>([]);
-  const route = useRoute();
-  
-  useEffect(() => {
-    // @ts-ignore
-    if (route.params && route.params.myList) {
-      // @ts-ignore
-      setMyList(route.params.myList);
-    }
-  }, [route.params]);
+  const { allFavoriteMovies, removeFavoriteMovies } = useContext(MovieContext);
 
-  const noResult = myList.length === 0;
-
-  const removeMyList = (movieId: number) => {
-    const newMyList = myList.filter((movie) => movie.id !== movieId);
-    setMyList(newMyList);
-  }
+  const movies = allFavoriteMovies || [];
+  const noResult = movies.length === 0;
 
   return (
     <View style={styles.container}>
@@ -38,13 +25,13 @@ const MyList: React.FC = () => {
         <Text style={styles.noResult}>Nenhum filme encontrado</Text>
       ) : (
         <FlatList
-          data={myList}
-          keyExtractor={(item) => item.id.toString()}
+          data={movies}
+          keyExtractor={(item) => item.id?.toString() ?? String(Math.random())}
           renderItem={({ item }) => (
             <View style={styles.movieItem}>
               <Image source={{ uri: `https://image.tmdb.org/t/p/w500${item.poster_path}` }} style={styles.movieBanner} />
-              <Text style={styles.movieTitle}>{item.title}</Text>
-              <TouchableOpacity style={styles.bookmarkContainer} onPress={() => removeMyList(item.id)}>
+              <Text style={styles.movieTitle}>{item.title}</Text> 
+              <TouchableOpacity style={styles.bookmarkContainer} onPress={() => removeFavoriteMovies(item.id)}>
                 <BookmarkSimple 
                 // @ts-ignore
                 style={styles.bookmarkSimple} 

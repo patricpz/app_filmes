@@ -15,7 +15,7 @@ type Movie = {
 type MovieContextData = {
     favoriteMovies: number[];
     allFavoriteMovies: Movie[];
-    addFavoriteMovies: (movieId: number) => void;
+    addFavoriteMovies: (movie: Movie) => void;
     removeFavoriteMovies: (movieId: number) => void;
 };
 
@@ -40,32 +40,38 @@ export function MovieProvider({ children }: MovieProviderProps) {
         async function loadFavoriteMovies() {
             const favoriteMoviesStorage = await AsyncStorage.getItem("@FavoriteMovies");
             if (favoriteMoviesStorage) {
-                setFavoriteMovies(JSON.parse(favoriteMoviesStorage));
+                const parsedFavoriteMovies = JSON.parse(favoriteMoviesStorage);
+                setFavoriteMovies(parsedFavoriteMovies.map((movie: Movie) => movie.id));
+                setAllFavoriteMovies(parsedFavoriteMovies);
             }
         }
         loadFavoriteMovies();
     }, []);
 
     const addFavoriteMovies = useCallback(
-        async (movieId: number) => {
-            if (!favoriteMovies.includes(movieId)) {
-                const newFavoriteMovies = [...favoriteMovies, movieId];
+        async (movie: Movie) => {
+            if (!favoriteMovies.includes(movie.id)) {
+                const newFavoriteMovies = [...favoriteMovies, movie.id];
+                const newAllFavoriteMovies = [...allFavoriteMovies, movie];
                 setFavoriteMovies(newFavoriteMovies);
-                await AsyncStorage.setItem("@FavoriteMovies", JSON.stringify(newFavoriteMovies));
+                setAllFavoriteMovies(newAllFavoriteMovies);
+                await AsyncStorage.setItem("@FavoriteMovies", JSON.stringify(newAllFavoriteMovies));
             }
         }, 
-        [favoriteMovies]
+        [favoriteMovies, allFavoriteMovies]
     );
 
     const removeFavoriteMovies = useCallback(
         async (movieId: number) => {
             if (favoriteMovies.includes(movieId)) {
                 const newFavoriteMovies = favoriteMovies.filter(id => id !== movieId);
+                const newAllFavoriteMovies = allFavoriteMovies.filter(movie => movie.id !== movieId);
                 setFavoriteMovies(newFavoriteMovies);
-                await AsyncStorage.setItem("@FavoriteMovies", JSON.stringify(newFavoriteMovies));
+                setAllFavoriteMovies(newAllFavoriteMovies);
+                await AsyncStorage.setItem("@FavoriteMovies", JSON.stringify(newAllFavoriteMovies));
             }
         }, 
-        [favoriteMovies]
+        [favoriteMovies, allFavoriteMovies]
     );
 
     const contextData : MovieContextData = {
