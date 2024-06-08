@@ -16,10 +16,10 @@ const MyList: React.FC = () => {
   
   useEffect(() => {
     // @ts-ignore
-      if (route.params && route.params.myList) {
-        // @ts-ignore
-        setMyList(route.params.myList);
-      }
+    if (route.params && route.params.myList) {
+      // @ts-ignore
+      setMyList(route.params.myList);
+    }
   }, [route.params]);
 
   const noResult = myList.length === 0;
@@ -44,8 +44,11 @@ const MyList: React.FC = () => {
             <View style={styles.movieItem}>
               <Image source={{ uri: `https://image.tmdb.org/t/p/w500${item.poster_path}` }} style={styles.movieBanner} />
               <Text style={styles.movieTitle}>{item.title}</Text>
-              <TouchableOpacity onPress={() => removeMyList(item.id)}>
-                <BookmarkSimple color={ "#FFF"} size={32} weight="thin" />
+              <TouchableOpacity style={styles.bookmarkContainer} onPress={() => removeMyList(item.id)}>
+                <BookmarkSimple 
+                // @ts-ignore
+                style={styles.bookmarkSimple} 
+                weight="thin" />
               </TouchableOpacity>
             </View>
           )}

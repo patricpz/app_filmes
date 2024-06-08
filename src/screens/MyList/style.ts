@@ -41,4 +41,13 @@ export const styles = StyleSheet.create({
     marginTop: 20,
     fontWeight: 'bold',
 },
+bookmarkContainer: {
+  position: 'absolute',
+  right: 10,
+  bottom: 50,
+},
+bookmarkSimple: {
+  fontSize: 32,
+  color: '#fff',
+},
 });
