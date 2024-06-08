@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Text, View, Image, ActivityIndicator, TouchableOpacity } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { api } from '../../../services/api';
 import { styles } from './styles';
 import { BookmarkSimple, CalendarBlank, CaretLeft, Clock, Star } from "phosphor-react-native";
+import { MovieContext } from '../../contexts/MOviesContext'; 
 
 type MovieDetail = {
     id: number;
@@ -18,12 +19,13 @@ type MovieDetail = {
 
 export function Details() {
     const route = useRoute();
-    const { movieId, myList: initialMyList = [] } = route.params as { movieId: number, myList?: MovieDetail[] };
+    const { movieId } = route.params as { movieId: number };
 
     const [movieDetail, setMovieDetail] = useState<MovieDetail | null>(null);
     const [loading, setLoading] = useState(true);
-    const [myList, setMyList] = useState<MovieDetail[]>(initialMyList);
     const navigation = useNavigation();
+    
+    const { favoriteMovies, addFavoriteMovies, removeFavoriteMovies } = useContext(MovieContext);
 
     useEffect(() => {
         const fetchMovieDetails = async () => {
@@ -46,23 +48,16 @@ export function Details() {
         return new Date(data).getFullYear();
     }
 
-    const addToMyList = () => {
-        if (movieDetail) {
-            const movieIndex = myList.findIndex(movie => movie.id === movieDetail.id);
-            let updatedList = [...myList];
-            if (movieIndex !== -1) {
-                updatedList.splice(movieIndex, 1);
-            } else {
-                updatedList = [...myList, movieDetail];
-            }
-            setMyList(updatedList);
-            // @ts-ignore
-            navigation.navigate('MyList', { myList: updatedList });
-        }
-    };
+    const isFavorite = favoriteMovies.includes(movieId);
 
-    const isMovieInList = (movieId: number): boolean => {
-        return myList.some(movie => movie.id === movieId);
+    const handleFavoriteToggle = () => {
+        if (movieDetail) {
+            if (isFavorite) {
+                removeFavoriteMovies(movieDetail.id);
+            } else {
+                addFavoriteMovies(movieDetail);
+            }
+        }
     };
 
     return (
@@ -72,8 +67,8 @@ export function Details() {
                     <CaretLeft color="#FFF" size={32} weight="thin" />
                 </TouchableOpacity>
                 <Text style={styles.headerText}>Detalhes</Text>
-                <TouchableOpacity onPress={addToMyList}>
-                    <BookmarkSimple color={isMovieInList(movieId) ? "#FCAF17" : "#FFF"} size={32} weight="thin" />
+                <TouchableOpacity onPress={handleFavoriteToggle}>
+                    <BookmarkSimple color={isFavorite ? "#FCAF17" : "#FFF"} size={32} weight="thin" />
                 </TouchableOpacity>
             </View>
 

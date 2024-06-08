@@ -19,6 +19,7 @@ export default function Home() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     if (search.length > 2) {
@@ -61,6 +62,24 @@ export default function Home() {
     }
   };
 
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    setPage(1); 
+    setDiscoveryMovies([]); 
+    try {
+      const response = await api.get("/movie/popular", {
+        params: {
+          page: 1,
+        },
+      });
+      setDiscoveryMovies(response.data.results);
+    } catch (error) {
+      console.error("Erro ao carregar dados da API:", error);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
   const navigation = useNavigation();
 
   const renderMovieItem = ({ item }: { item: Movie }) => (
@@ -100,6 +119,8 @@ export default function Home() {
           contentContainerStyle={{ padding: 35, paddingBottom: 100 }}
           onEndReached={() => setPage((prevPage) => prevPage + 1)}
           onEndReachedThreshold={0.5}
+          onRefresh={handleRefresh}
+          refreshing={refreshing}
         />
         {loading && <ActivityIndicator size={50} color="#FCAF17" />}
       </View>
