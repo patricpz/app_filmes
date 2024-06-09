@@ -3,7 +3,6 @@ import { Text, View, TextInput, FlatList, Image, ActivityIndicator, TouchableOpa
 import { styles } from './style';
 import { MagnifyingGlass } from "phosphor-react-native";
 import { api } from '../../../services/api';
-import { CardMovies } from "../../components/CardMovies";
 import { useNavigation } from "@react-navigation/native";
 
 interface Movie {
@@ -16,6 +15,7 @@ export function Search() {
     const [discoveryMovies, setDiscoveryMovies] = useState<Movie[]>([]);
     const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
     const [page, setPage] = useState(1);
     const [isFetchingMore, setIsFetchingMore] = useState(false);
 
@@ -49,7 +49,7 @@ export function Search() {
     };
 
     const loadMoreData = async () => {
-        if (isFetchingMore) return;
+        if (isFetchingMore || search.length > 2) return;
         setIsFetchingMore(true);
         try {
             const response = await api.get("/movie/popular", {
@@ -64,6 +64,24 @@ export function Search() {
             setIsFetchingMore(false);
         }
     };
+
+    const handleRefresh = async () => {
+        setRefreshing(true);
+        setPage(1); 
+        setDiscoveryMovies([]); 
+        try {
+          const response = await api.get("/movie/popular", {
+            params: {
+              page: 1,
+            },
+          });
+          setDiscoveryMovies(response.data.results);
+        } catch (error) {
+          console.error("Erro ao carregar dados da API:", error);
+        } finally {
+          setRefreshing(false);
+        }
+      };
 
     const renderMovieItem = ({ item }: { item: Movie }) => (
         <TouchableOpacity onPress={() => navigation.navigate("Details", { movieId: item.id })} style={styles.movieItem}>
@@ -99,6 +117,8 @@ export function Search() {
                 contentContainerStyle={{ padding: 35, paddingBottom: 100 }}
                 onEndReached={() => setPage((prevPage) => prevPage + 1)}
                 onEndReachedThreshold={0.5}
+                onRefresh={handleRefresh}
+                refreshing={refreshing}
                 renderItem={renderMovieItem}
             />
             {loading && <ActivityIndicator size={50} color="#FCAF17" />}

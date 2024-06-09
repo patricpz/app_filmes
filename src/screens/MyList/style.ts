@@ -27,6 +27,18 @@ export const styles = StyleSheet.create({
     height: 112,  
     borderRadius: 8,
   },
+  placeholderBanner: {
+    width: 75, 
+    height: 112,  
+    borderRadius: 8,
+    backgroundColor: '#e0e0e0', // Cinza claro
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  placeholderText: {
+    color: '#999', // Cinza médio
+    fontSize: 14,
+  },
   movieTitle: {
     marginLeft: 10,
     fontSize: 20,
@@ -40,5 +52,14 @@ export const styles = StyleSheet.create({
     fontSize: 18,
     marginTop: 20,
     fontWeight: 'bold',
-},
+  },
+  bookmarkContainer: {
+    position: 'absolute',
+    right: 10,
+    bottom: 50,
+  },
+  bookmarkSimple: {
+    fontSize: 32,
+    color: '#fff',
+  },
 });
